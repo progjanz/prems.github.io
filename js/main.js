@@ -65,21 +65,31 @@
     });
 
 
-    // Modal Video
-    $(document).ready(function () {
-        var $videoSrc;
-        $('.btn-play').click(function () {
-            $videoSrc = $(this).data("src");
+     // Modal Video
+    $(document).ready(function() {
+        // When the modal is about to be shown
+        $('#videoModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var videoSrc = button.data('src');
+            
+            // Convert YouTube watch URL to embed URL
+            if(videoSrc.indexOf('youtube.com/watch') > -1) {
+                var videoId = videoSrc.split('v=')[1];
+                var ampersandPosition = videoId.indexOf('&');
+                if(ampersandPosition != -1) {
+                    videoId = videoId.substring(0, ampersandPosition);
+                }
+                videoSrc = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+            }
+            
+            // Set the source of the iframe
+            $('#video').attr('src', videoSrc);
         });
-        console.log($videoSrc);
-
-        $('#videoModal').on('shown.bs.modal', function (e) {
-            $("#video").attr('src', $videoSrc + "?autoplay=1&amp;modestbranding=1&amp;showinfo=0");
-        })
-
-        $('#videoModal').on('hide.bs.modal', function (e) {
-            $("#video").attr('src', $videoSrc);
-        })
+        
+        // Reset iframe when modal is closed
+        $('#videoModal').on('hide.bs.modal', function() {
+            $('#video').attr('src', '');
+        });
     });
 
 
